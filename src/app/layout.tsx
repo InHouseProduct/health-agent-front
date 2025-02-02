@@ -1,3 +1,4 @@
+import React from 'react';
 import { Inter } from "next/font/google";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/lib/react-query";
