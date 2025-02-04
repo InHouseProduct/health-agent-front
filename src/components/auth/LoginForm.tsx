@@ -6,6 +6,7 @@ import * as yup from 'yup';
 import { Input } from '@/components/ui/Input';
 import { useAuth } from '@/hooks/useAuth';
 import { LoginCredentials } from '@/types/auth';
+import toast from 'react-hot-toast';
 
 const loginSchema = yup.object({
     email: yup
@@ -28,12 +29,12 @@ const loginSchema = yup.object({
 });
 
 export const LoginForm = () => {
-    const { login, isLoading, error } = useAuth();
+    const { login, isLoading } = useAuth();
     const {
         register,
         handleSubmit,
         formState: { errors, isSubmitting, isDirty, isValid },
-        reset,
+        setError,
     } = useForm<LoginCredentials>({
         resolver: yupResolver(loginSchema),
         mode: 'onChange',
@@ -42,21 +43,25 @@ export const LoginForm = () => {
     const onSubmit = async (data: LoginCredentials) => {
         try {
             await login(data);
-        } catch (error) {
-            console.error('Login error:', error);
+        } catch (error: any) {
+            // Handle specific server validation errors
+            if (error.response?.data?.errors) {
+                const serverErrors = error.response.data.errors;
+                Object.keys(serverErrors).forEach((key) => {
+                    setError(key as keyof LoginCredentials, {
+                        type: 'server',
+                        message: serverErrors[key][0],
+                    });
+                });
+                toast.error('Please check your input');
+            } else {
+                toast.error(error.message || 'An error occurred');
+            }
         }
     };
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            {error && (
-                <div className="bg-red-50 p-4 rounded-md">
-                    <p className="text-red-500 text-sm">
-                        {error instanceof Error ? error.message : 'An error occurred during login'}
-                    </p>
-                </div>
-            )}
-
             <Input
                 label="Email"
                 type="email"

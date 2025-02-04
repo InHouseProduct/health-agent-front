@@ -7,11 +7,23 @@ class AuthService extends ApiService {
   }
 
   async login(credentials: LoginCredentials) {
-    return this.post<AuthResponse>('/login', credentials);
+    try {
+      const response = await this.post<AuthResponse>('/login', credentials);
+      return response;
+    } catch (error: any) {
+      if (error.response?.data?.message) {
+        throw new Error(error.response.data.message);
+      }
+      throw new Error('An error occurred during login');
+    }
   }
 
   async logout() {
-    return this.post('/logout', {});
+    try {
+      return await this.post('/logout', {});
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || 'Logout failed');
+    }
   }
 }
 

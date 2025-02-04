@@ -2,6 +2,7 @@
 
 import { QueryClient, QueryClientProvider as TanstackQueryClientProvider } from "@tanstack/react-query"
 import { useState } from "react"
+import { Toaster } from 'react-hot-toast';
 
 export default function QueryClientProvider({
     children
@@ -19,6 +20,7 @@ export default function QueryClientProvider({
 
     return (
         <TanstackQueryClientProvider client={queryClient}>
+            <Toaster position="top-right" />
             {children}
         </TanstackQueryClientProvider>
     )
