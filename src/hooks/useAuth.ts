@@ -12,17 +12,17 @@ export const useAuth = () => {
   const loginMutation = useMutation({
     mutationFn: (credentials: LoginCredentials) => authService.login(credentials),
     onSuccess: (response) => {
-      // Store token
-      localStorage.setItem('token', response.data.token);
-      
-      // Show success message
-      toast.success('Login successful!');
-      
-      // Redirect to dashboard
-      router.push('/dashboard');
+      // Laravel typically returns token in response.data
+      const token = response.data.access_token;
+      if (token) {
+        localStorage.setItem('token', token);
+        toast.success('Login successful!');
+        router.push('/dashboard');
+      } else {
+        toast.error('No authentication token received');
+      }
     },
     onError: (error: Error) => {
-      // Show error message
       toast.error(error.message || 'Login failed');
     },
   });
@@ -42,6 +42,5 @@ export const useAuth = () => {
     login: loginMutation.mutate,
     logout,
     isLoading: loginMutation.isPending,
-    error: loginMutation.error,
   };
 }; 

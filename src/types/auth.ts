@@ -4,10 +4,15 @@ export interface LoginCredentials {
 }
 
 export interface AuthResponse {
-  user: {
-    id: number;
-    name: string;
-    email: string;
+  status: string;
+  message: string;
+  data: {
+    user: {
+      id: number;
+      name: string;
+      email: string;
+      access_token: string;
+      // Add other user fields as needed
+    };
   };
-  token: string;
 } 

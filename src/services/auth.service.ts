@@ -3,7 +3,8 @@ import { AuthResponse, LoginCredentials } from '@/types/auth';
 
 class AuthService extends ApiService {
   constructor() {
-    super('/auth'); // Base URL for auth endpoints
+    // Since we're already setting baseURL in axios config, we don't need /api here
+    super(''); // Empty string as we'll use full paths
   }
 
   async login(credentials: LoginCredentials) {
@@ -11,6 +12,7 @@ class AuthService extends ApiService {
       const response = await this.post<AuthResponse>('/login', credentials);
       return response;
     } catch (error: any) {
+      console.log(error);
       if (error.response?.data?.message) {
         throw new Error(error.response.data.message);
       }
