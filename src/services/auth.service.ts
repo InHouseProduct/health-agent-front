@@ -10,9 +10,10 @@ class AuthService extends ApiService {
   async login(credentials: LoginCredentials) {
     try {
       const response = await this.post<AuthResponse>('/login', credentials);
+      console.log('Login response:', response);
       return response;
     } catch (error: any) {
-      console.log(error);
+      console.error('Login error:', error);
       if (error.response?.data?.message) {
         throw new Error(error.response.data.message);
       }

@@ -12,17 +12,27 @@ export const useAuth = () => {
   const loginMutation = useMutation({
     mutationFn: (credentials: LoginCredentials) => authService.login(credentials),
     onSuccess: (response) => {
-      // Laravel typically returns token in response.data
+      console.log('Login successful, response:', response); // Debug log
       const token = response.data.access_token;
+      
       if (token) {
         localStorage.setItem('token', token);
         toast.success('Login successful!');
-        router.push('/dashboard');
+        
+        // Add a small delay before navigation
+        setTimeout(() => {
+          console.log('Attempting to navigate to dashboard...'); // Debug log
+          router.push('/dashboard');
+          // Force a hard navigation if router.push doesn't work
+          window.location.href = '/dashboard';
+        }, 100);
       } else {
+        console.error('No token in response:', response); // Debug log
         toast.error('No authentication token received');
       }
     },
     onError: (error: Error) => {
+      console.error('Login error:', error); // Debug log
       toast.error(error.message || 'Login failed');
     },
   });
