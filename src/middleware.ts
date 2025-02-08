@@ -21,6 +21,7 @@ export function middleware(request: NextRequest) {
   // If trying to access login with token
   if (token && isLoginPage) {
     console.log('Token present, redirecting to dashboard...'); // Debug log
+    console.log('Token present, redirecting to dashboard...'); // Debug log
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
