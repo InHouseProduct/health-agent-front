@@ -3,6 +3,7 @@ import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
   console.log('Middleware running, checking auth...'); // Debug log
+  console.log('Middleware running, checking auth...'); // Debug log
   console.log('Middleware running, checking auth...', request.headers.get('authorization')); // Debug log
   
   const token = request.cookies.get('token')?.value || request.headers.get('authorization');
