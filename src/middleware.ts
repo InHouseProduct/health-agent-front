@@ -1,15 +1,19 @@
+import { log } from 'console';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
   console.log('Middleware running, checking auth...'); // Debug log
-  console.log('Middleware running, checking auth...'); // Debug log
-  console.log('Middleware running, checking auth...', request.headers.get('authorization')); // Debug log
   
-  const token = request.cookies.get('token')?.value || request.headers.get('authorization');
+  // Check both cookie and authorization header
+  const cookieToken = request.cookies.get('token')?.value;
+  const headerToken = request.headers.get('authorization')?.replace('Bearer ', '');
+  const token = cookieToken || headerToken;
+  
   const isLoginPage = request.nextUrl.pathname === '/login';
   
-  console.log('Token present:', !!token); // Debug log
+  console.log('Cookie token:', cookieToken); // Debug log
+  console.log('Header token:', headerToken); // Debug log
   console.log('Current path:', request.nextUrl.pathname); // Debug log
 
   // If trying to access dashboard without token
@@ -20,7 +24,6 @@ export function middleware(request: NextRequest) {
 
   // If trying to access login with token
   if (token && isLoginPage) {
-    console.log('Token present, redirecting to dashboard...'); // Debug log
     console.log('Token present, redirecting to dashboard...'); // Debug log
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }

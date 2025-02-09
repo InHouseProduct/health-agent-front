@@ -16,15 +16,16 @@ export const useAuth = () => {
       const token = response.data.access_token;
       
       if (token) {
+        // Store token in both localStorage and cookie
         localStorage.setItem('token', token);
+        document.cookie = `token=${token}; path=/`;
+        
         toast.success('Login successful!');
         
         // Add a small delay before navigation
         setTimeout(() => {
           console.log('Attempting to navigate to dashboard...'); // Debug log
           router.push('/dashboard');
-          // Force a hard navigation if router.push doesn't work
-          window.location.href = '/dashboard';
         }, 100);
       } else {
         console.error('No token in response:', response); // Debug log
@@ -40,7 +41,9 @@ export const useAuth = () => {
   const logout = async () => {
     try {
       await authService.logout();
+      // Clear both localStorage and cookie
       localStorage.removeItem('token');
+      document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
       toast.success('Logged out successfully');
       router.push('/login');
     } catch (error) {
