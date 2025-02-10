@@ -3,16 +3,26 @@ export interface LoginCredentials {
   password: string;
 }
 
+export interface User {
+  id: number;
+  name: string;
+  email: string;
+  // Add other user fields as needed
+}
+
 export interface AuthResponse {
   status: string;
   message: string;
   data: {
-    user: {
-      id: number;
-      name: string;
-      email: string;
-      access_token: string;
-      // Add other user fields as needed
-    };
+    access_token: string;
+    user: User;
+  };
+}
+
+export interface MeResponse {
+  status: string;
+  message: string;
+  data: {
+    user: User;
   };
 } 

@@ -1,39 +1,56 @@
 'use client'
 
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { authService } from '@/services/auth.service';
-import { LoginCredentials } from '@/types/auth';
+import { LoginCredentials, User } from '@/types/auth';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
+import { useState, useEffect } from 'react';
 
 export const useAuth = () => {
   const router = useRouter();
+  const [user, setUser] = useState<User | null>(null);
+
+  // Query for fetching user data
+  const { data: userData, refetch: refetchUser } = useQuery({
+    queryKey: ['user'],
+    queryFn: async () => {
+      try {
+        const response = await authService.me();
+        return response.data.user;
+      } catch (error) {
+        return null;
+      }
+    },
+    enabled: false, // Don't fetch automatically
+  });
+
+  // Update user state when userData changes
+  useEffect(() => {
+    if (userData) {
+      setUser(userData);
+    }
+  }, [userData]);
 
   const loginMutation = useMutation({
     mutationFn: (credentials: LoginCredentials) => authService.login(credentials),
-    onSuccess: (response) => {
-      console.log('Login successful, response:', response); // Debug log
+    onSuccess: async (response) => {
       const token = response.data.access_token;
       
       if (token) {
-        // Store token in both localStorage and cookie
         localStorage.setItem('token', token);
         document.cookie = `token=${token}; path=/`;
         
-        toast.success('Login successful!');
+        // Fetch user data after successful login
+        await refetchUser();
         
-        // Add a small delay before navigation
-        setTimeout(() => {
-          console.log('Attempting to navigate to dashboard...'); // Debug log
-          router.push('/dashboard');
-        }, 100);
+        toast.success('Login successful!');
+        router.push('/dashboard');
       } else {
-        console.error('No token in response:', response); // Debug log
         toast.error('No authentication token received');
       }
     },
     onError: (error: Error) => {
-      console.error('Login error:', error); // Debug log
       toast.error(error.message || 'Login failed');
     },
   });
@@ -41,9 +58,9 @@ export const useAuth = () => {
   const logout = async () => {
     try {
       await authService.logout();
-      // Clear both localStorage and cookie
       localStorage.removeItem('token');
       document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+      setUser(null);
       toast.success('Logged out successfully');
       router.push('/login');
     } catch (error) {
@@ -52,8 +69,10 @@ export const useAuth = () => {
   };
 
   return {
+    user,
     login: loginMutation.mutate,
     logout,
     isLoading: loginMutation.isPending,
+    refetchUser,
   };
 }; 

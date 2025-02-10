@@ -12,8 +12,7 @@ export function middleware(request: NextRequest) {
   
   const isLoginPage = request.nextUrl.pathname === '/login';
   
-  console.log('Cookie token:', cookieToken); // Debug log
-  console.log('Header token:', headerToken); // Debug log
+  console.log('Token present:', !!token); // Debug log
   console.log('Current path:', request.nextUrl.pathname); // Debug log
 
   // If trying to access dashboard without token

@@ -1,5 +1,5 @@
 import { ApiService } from './api.service';
-import { AuthResponse, LoginCredentials } from '@/types/auth';
+import { AuthResponse, LoginCredentials, MeResponse } from '@/types/auth';
 
 class AuthService extends ApiService {
   constructor() {
@@ -18,6 +18,16 @@ class AuthService extends ApiService {
         throw new Error(error.response.data.message);
       }
       throw new Error('An error occurred during login');
+    }
+  }
+
+  async me() {
+    try {
+      const response = await this.get<MeResponse>('/me');
+      console.log('Me response:', response);
+      return response;
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || 'Failed to fetch user data');
     }
   }
 

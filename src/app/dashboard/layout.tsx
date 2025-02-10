@@ -1,12 +1,13 @@
 'use client'
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
     HomeIcon,
     UsersIcon,
     ChartBarIcon,
     Cog6ToothIcon,
-    ArrowLeftOnRectangleIcon
+    ArrowLeftOnRectangleIcon,
+    UserCircleIcon
 } from '@heroicons/react/24/outline';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -23,13 +24,31 @@ export default function DashboardLayout({
     children: React.ReactNode;
 }) {
     const [sidebarOpen, setSidebarOpen] = useState(false);
-    const { logout } = useAuth();
+    const { user, logout, refetchUser } = useAuth();
+
+    // Fetch user data when component mounts
+    useEffect(() => {
+        refetchUser();
+    }, [refetchUser]);
 
     return (
         <div className="min-h-screen bg-gray-100">
             {/* Sidebar */}
             <div className="fixed inset-y-0 left-0 w-64 bg-white shadow-lg">
                 <div className="flex h-full flex-col">
+                    {/* User info */}
+                    <div className="flex items-center space-x-3 p-4 border-b border-gray-200">
+                        <UserCircleIcon className="h-8 w-8 text-gray-400" />
+                        <div>
+                            <p className="text-sm font-medium text-gray-900">
+                                {user?.name || 'Loading...'}
+                            </p>
+                            <p className="text-xs text-gray-500">
+                                {user?.email || ''}
+                            </p>
+                        </div>
+                    </div>
+
                     {/* Sidebar header */}
                     <div className="flex h-16 items-center justify-center border-b border-gray-200">
                         <h1 className="text-2xl font-bold text-gray-900">Admin Panel</h1>
