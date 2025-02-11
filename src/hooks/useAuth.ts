@@ -17,7 +17,7 @@ export const useAuth = () => {
     queryFn: async () => {
       try {
         const response = await authService.me();
-        return response.data.user;
+        return response.data;
       } catch (error) {
         return null;
       }

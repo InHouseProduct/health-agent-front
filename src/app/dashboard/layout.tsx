@@ -11,12 +11,25 @@ import {
 } from '@heroicons/react/24/outline';
 import { useAuth } from '@/hooks/useAuth';
 
-const navigation = [
-    { name: 'Dashboard', href: '/dashboard', icon: HomeIcon },
-    { name: 'Users', href: '/dashboard/users', icon: UsersIcon },
-    { name: 'Analytics', href: '/dashboard/analytics', icon: ChartBarIcon },
-    { name: 'Settings', href: '/dashboard/settings', icon: Cog6ToothIcon },
-];
+// Move navigation inside the component to access user context
+const getNavigation = (userRoles: string[]) => {
+    const isSuperAdmin = userRoles.includes('superadmin');
+
+    const baseNavigation = [
+        { name: 'Dashboard', href: '/dashboard', icon: HomeIcon },
+        { name: 'Users', href: '/dashboard/users', icon: UsersIcon },
+        { name: 'Analytics', href: '/dashboard/analytics', icon: ChartBarIcon },
+    ];
+
+    // Add Settings only for superadmin
+    if (isSuperAdmin) {
+        baseNavigation.push(
+            { name: 'Settings', href: '/dashboard/settings', icon: Cog6ToothIcon }
+        );
+    }
+
+    return baseNavigation;
+};
 
 export default function DashboardLayout({
     children,
@@ -25,6 +38,10 @@ export default function DashboardLayout({
 }) {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const { user, logout, refetchUser } = useAuth();
+
+    // Get user roles
+    const userRoles = user?.roles?.map(role => role.name) || [];
+    const navigation = getNavigation(userRoles);
 
     // Fetch user data when component mounts
     useEffect(() => {
@@ -42,6 +59,9 @@ export default function DashboardLayout({
                         <div>
                             <p className="text-sm font-medium text-gray-900">
                                 {user?.name || 'Loading...'}
+                            </p>
+                            <p className="text-xs text-indigo-600">
+                                {userRoles.join(', ')}
                             </p>
                             <p className="text-xs text-gray-500">
                                 {user?.email || ''}
