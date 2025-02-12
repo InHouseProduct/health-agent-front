@@ -25,7 +25,6 @@ export const useAuth = () => {
     enabled: false, // Don't fetch automatically
   });
 
-  // Update user state when userData changes
   useEffect(() => {
     if (userData) {
       setUser(userData);
@@ -41,7 +40,6 @@ export const useAuth = () => {
         localStorage.setItem('token', token);
         document.cookie = `token=${token}; path=/`;
         
-        // Fetch user data after successful login
         await refetchUser();
         
         toast.success('Login successful!');
