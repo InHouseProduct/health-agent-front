@@ -21,7 +21,9 @@ export function middleware(request: NextRequest) {
 
   return NextResponse.next();
 }
-
+// This middleware is used to check if the user is logged in and redirect to the login page if they are not
+// It also checks if the user is trying to access the login page with a token and redirects to the dashboard if they are
+// It is used to protect the dashboard and login page from being accessed without a token
 export const config = {
   matcher: ['/dashboard/:path*', '/login']
 }; 
