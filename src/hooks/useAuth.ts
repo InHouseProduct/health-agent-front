@@ -11,9 +11,6 @@ export const useAuth = () => {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
 
-  // Query for fetching user data
-  // This query is used to fetch the user data from the server
-  // It is not automatically fetched, but can be fetched manually by calling the refetchUser function
   const { data: userData, refetch: refetchUser } = useQuery({
     queryKey: ['user'],
     queryFn: async () => {
